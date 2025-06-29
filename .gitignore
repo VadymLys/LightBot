@@ -5,6 +5,7 @@
 .wwebjs_auth
 .wwebjs_cache
 run_project.bat
+has_run.flag
 
 .env
 .env.test

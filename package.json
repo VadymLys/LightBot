@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/dev.ts",
+    "start": "tsx src/main.ts",
     "telegram": "tsx src/bots/Telegram/TelegramBot.ts",
     "whatsapp": "tsx src/bots/WhatsAppBot.ts",
     "test": "vitest",
