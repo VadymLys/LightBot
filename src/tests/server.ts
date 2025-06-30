@@ -12,7 +12,6 @@ app.get("/indicators", checkApiKey, async (req, res) => {
   try {
     const result = await handlerCore({} as APIGatewayProxyEvent);
 
-    // розпарсимо рядок JSON у масив
     const data = JSON.parse(result.body);
 
     res.status(result.statusCode).json(data);
