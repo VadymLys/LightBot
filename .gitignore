@@ -6,6 +6,8 @@
 .wwebjs_cache
 run_project.bat
 has_run.flag
+lambda.zip
+
 
 .env
 .env.test

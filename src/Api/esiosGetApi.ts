@@ -15,7 +15,7 @@ dotenv.config();
 const url = "https://api.esios.ree.es";
 
 const createApi = (baseUrl: string) => {
-  InputValidator.isEmail(baseUrl);
+  InputValidator.isUrl(baseUrl);
 
   return new Proxy(
     {},
@@ -23,7 +23,8 @@ const createApi = (baseUrl: string) => {
       get: (target, prop: string) => {
         return async (
           id: number,
-          queryParams?: QueryParams
+          queryParams?: QueryParams,
+          token?: string
         ): Promise<IndicatorResponse> => {
           let qs = queryParams
             ? `?${new URLSearchParams(
@@ -38,6 +39,7 @@ const createApi = (baseUrl: string) => {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "x-api-key": process.env.API_KEY || "",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           };
 
           const res = await fetch(resourse, {

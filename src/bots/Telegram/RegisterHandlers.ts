@@ -2,11 +2,27 @@ import { ResponseHandler } from "../../handlers/responseHandler.js";
 import { today, toISODate, tomorrow } from "../../utils/DateConverter.js";
 import { handlerCore } from "../../handlers/handleCore.js";
 import { bot } from "./TelegramBot.js";
+import { isAuthorized } from "../../utils/isAuthorized.js";
+import { generateAccessTokenTelegram } from "../../handlers/jwthandler.js";
 
 export const registerHandlers = () => {
   bot.use(async (ctx, next) => {
     console.log("📥 New update received:", ctx.update);
     await next();
+  });
+
+  bot.command("login", async (ctx) => {
+    const userId = ctx.from?.id;
+    const username = ctx.from?.username;
+
+    if (!userId) {
+      await ctx.reply("User ID  not found");
+    }
+
+    const token = generateAccessTokenTelegram(userId, username);
+
+    await ctx.reply("Login successful!");
+    await ctx.reply(token);
   });
 
   bot.command("getdata", async (ctx) => {
@@ -20,6 +36,12 @@ export const registerHandlers = () => {
       },
     };
 
+    if (!isAuthorized(ctx)) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ error: "Unauthorized" }),
+      };
+    }
     try {
       const response = await handlerCore(event as any);
       const parsed = JSON.parse(response.body);

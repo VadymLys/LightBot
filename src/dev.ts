@@ -1,4 +1,4 @@
-import { lambdaHandler } from "./handlers/lambdaHandler.js";
+import { handlerCore } from "./handlers/handleCore.js";
 import { today, tomorrow, toISODate } from "./utils/DateConverter.js";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 
@@ -13,13 +13,8 @@ const main = async () => {
     },
   };
 
-  const mockContext = {};
-  const mockCallback = () => {};
-
-  const response = (await lambdaHandler(
-    mockEvent as any,
-    mockContext as any,
-    mockCallback
+  const response = (await handlerCore(
+    mockEvent as any
   )) as APIGatewayProxyResult;
 
   console.log("Response:", response);

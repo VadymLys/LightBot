@@ -1,6 +1,7 @@
 import request from "supertest";
-import app from "./server.js";
+import app from "./serverTest.js";
 import { describe, it, expect } from "vitest";
+import jwt from "jsonwebtoken";
 
 describe("Test Api", () => {
   it("should return 200 for GET /", async () => {
@@ -34,5 +35,19 @@ describe("Test Api", () => {
 
     expect(res.status).toBe(401);
     expect(typeof res.body).toBe("object");
+  });
+  it("checking authorization with JWT", async () => {
+    const token = jwt.sign({ userId: 123 }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    const res = await request(app)
+      .get("/indicators")
+      .set("Authorization", `Bearer ${token}`)
+      .set("x-api-key", process.env.API_KEY || "");
+
+    expect(res.statusCode).toBe(200);
+    expect(res.headers).toHaveProperty("Authorization");
+    expect(res.headers["Authorization"]).toBe(`Bearer${token}`);
   });
 });

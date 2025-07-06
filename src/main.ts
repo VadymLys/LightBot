@@ -6,8 +6,7 @@ import { formatIndicatorMessage } from "./utils/formatIndicatorMessage.js";
 
 dotenv.config();
 
-const logPath: string =
-  "C:\\Users\\User\\Documents\\Programacion\\power-logs.txt";
+const logPath: string = process.env.LOGS_LOCATION || "power-logs.txt";
 
 async function main(): Promise<void> {
   try {
