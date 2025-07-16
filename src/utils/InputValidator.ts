@@ -1,63 +1,131 @@
+import { ExceptionError } from "../errors/ExceptionError.js";
 export class InputValidator {
-  static isNullOrUndefined(value: any): boolean {
-    return value === null || value === undefined;
+  static isNullOrUndefined(value: any): void {
+    if (value === null || value === undefined) {
+      throw new ExceptionError("Value is null or undefined");
+    }
   }
 
-  static isEmptyString(value: any): boolean {
-    return value.trim() === "" || this.isNullOrUndefined(value);
+  static isEmptyString(value: any): void {
+    this.isNullOrUndefined(value);
+
+    if (typeof value !== "string") {
+      throw new ExceptionError("Value is not a string");
+    }
+
+    if (value.trim() === "") {
+      throw new ExceptionError("String is empty");
+    }
   }
 
-  static isEmpty(value: any): boolean {
-    if (this.isEmptyString(value) || this.isNullOrUndefined(value)) return true;
+  static isEmpty(value: any): void {
+    if (value === null || value === undefined) {
+      throw new ExceptionError("Value is null or undefined");
+    }
+
+    if (typeof value === "string") {
+      if (value.trim() === "") {
+        throw new ExceptionError("String is empty");
+      }
+      return;
+    }
 
     if (Array.isArray(value)) {
-      return value.length === 0;
+      if (value.length === 0) {
+        throw new ExceptionError("Array is empty");
+      }
+      return;
     }
 
     if (typeof value === "object") {
-      return Object.keys(value).length === 0;
+      if (Object.keys(value).length === 0) {
+        throw new ExceptionError("Object is empty");
+      }
+      return;
     }
-    return false;
   }
 
-  static isNumber(value: any): boolean {
-    return typeof value === "number" && !isNaN(value);
+  static isNumber(value: any): void {
+    if (typeof value !== "number" || isNaN(value)) {
+      throw new ExceptionError("Value is not a valid number");
+    }
   }
 
-  static isPositive(value: any): boolean {
-    return this.isNumber(value) && value > 0;
+  static isPositive(value: any): void {
+    this.isNumber(value);
+
+    if (value <= 0) {
+      throw new ExceptionError("Number is not positive");
+    }
   }
 
-  static isEmail(value: any): boolean {
-    const regexEmail = /^[^s@]+@[^s@]+.[^s@]+$/;
-    return typeof value === "string" && regexEmail.test(value);
+  static isEmail(value: any): void {
+    this.isNullOrUndefined(value);
+
+    if (typeof value !== "string") {
+      throw new ExceptionError("Value is not a string");
+    }
+
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!regexEmail.test(value)) {
+      throw new ExceptionError("Value is not a valid email");
+    }
   }
 
-  static isUrl(value: any): boolean {
+  static isUrl(value: any): void {
+    this.isNullOrUndefined(value);
+
+    if (typeof value !== "string") {
+      throw new ExceptionError("Value is not a string");
+    }
+
     try {
       new URL(value);
-      return true;
     } catch {
-      return false;
+      throw new ExceptionError("Value is not a valid URL");
     }
   }
 
-  static isUUID(value: any): boolean {
+  static isUUID(value: any): void {
+    this.isNullOrUndefined(value);
+
+    if (typeof value !== "string") {
+      throw new ExceptionError("Value is not a string");
+    }
+
     const regexUUID =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    return typeof value === "string" && regexUUID.test(value);
+
+    if (!regexUUID.test(value)) {
+      throw new ExceptionError("Value is not a valid UUID");
+    }
   }
 
-  static isDate(value: any): boolean {
-    return value instanceof Date && !isNaN(value.getTime());
+  static isDate(value: any): void {
+    if (!(value instanceof Date) || isNaN(value.getTime())) {
+      throw new ExceptionError("Value is not a valid Date");
+    }
   }
 
-  static isValidDateString(value: any): boolean {
-    return typeof value === "string" && !isNaN(Date.parse(value));
+  static isValidDateString(value: any): void {
+    this.isNullOrUndefined(value);
+
+    if (typeof value !== "string") {
+      throw new ExceptionError("Value is not a string");
+    }
+
+    if (isNaN(Date.parse(value))) {
+      throw new ExceptionError("Value is not a valid date string");
+    }
   }
 
-  static isInRange(value: number, min: number, max: number): boolean {
-    return this.isNumber(value) && value >= min && value <= max;
+  static isInRange(value: any, min: number, max: number): void {
+    this.isNumber(value);
+
+    if (value < min || value > max) {
+      throw new ExceptionError(`Number is not in range [${min}, ${max}]`);
+    }
   }
 }
 

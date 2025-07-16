@@ -32,7 +32,7 @@ app.post("/login", checkApiKey, async (req, res) => {
   const telegramData = req.body;
 
   if (!authHandler(telegramData)) {
-    return res.status(401).json({ error: "Unauthorized" });
+    ResponseHandler.error(telegramData);
   }
 
   const token = generateAccessTokenTelegram(

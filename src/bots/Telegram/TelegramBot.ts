@@ -1,5 +1,6 @@
 import { Bot } from "grammy";
 import dotenv from "dotenv";
+import { MyContext } from "../../types/types.js";
 
 dotenv.config();
 
@@ -9,4 +10,4 @@ if (!botToken) {
   throw new Error("Please provide TELEGRAM_BOT_TOKEN in .env file");
 }
 
-export const bot = new Bot(botToken);
+export const bot = new Bot<MyContext>(botToken);

@@ -2,8 +2,9 @@ import { ResponseHandler } from "../../handlers/responseHandler.js";
 import { today, toISODate, tomorrow } from "../../utils/DateConverter.js";
 import { handlerCore } from "../../handlers/handleCore.js";
 import { bot } from "./TelegramBot.js";
-import { isAuthorized } from "../../utils/isAuthorized.js";
 import { generateAccessTokenTelegram } from "../../handlers/jwthandler.js";
+import { pool } from "../../db/dbCloud.js";
+import { authMiddleware } from "../../middleware/auth-middleware.js";
 
 export const registerHandlers = () => {
   bot.use(async (ctx, next) => {
@@ -17,15 +18,35 @@ export const registerHandlers = () => {
 
     if (!userId) {
       await ctx.reply("User ID  not found");
+      return;
     }
 
     const token = generateAccessTokenTelegram(userId, username);
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    const { rows } = await pool.query(
+      `SELECT * FROM telegram_users WHERE telegram_id = $1`,
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      await pool.query(
+        `INSERT INTO telegram_users (telegram_id, username, auth_token, token_expires_at)
+         VALUES ($1, $2, $3, $4)`,
+        [userId, username, token, expiresAt]
+      );
+    } else {
+      await pool.query(
+        `UPDATE telegram_users SET auth_token = $1, token_expires_at = $2 WHERE telegram_id = $3`,
+        [token, expiresAt, userId]
+      );
+    }
 
     await ctx.reply("Login successful!");
     await ctx.reply(token);
   });
 
-  bot.command("getdata", async (ctx) => {
+  bot.command("getdata", authMiddleware, async (ctx) => {
     const event = {
       queryStringParameters: {
         id: "1001",
@@ -36,12 +57,22 @@ export const registerHandlers = () => {
       },
     };
 
-    if (!isAuthorized(ctx)) {
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ error: "Unauthorized" }),
-      };
+    const { rows } = await pool.query(
+      `SELECT auth_token, token_expires_at FROM telegram_users WHERE telegram_id = $1`,
+      [ctx.from?.id]
+    );
+
+    if (
+      !rows[0] ||
+      !rows[0].auth_token ||
+      new Date(rows[0].token_expires_at) < new Date()
+    ) {
+      await ctx.reply(
+        "❌ You are not authorized or your session expired. Use /login again."
+      );
+      return;
     }
+
     try {
       const response = await handlerCore(event as any);
       const parsed = JSON.parse(response.body);

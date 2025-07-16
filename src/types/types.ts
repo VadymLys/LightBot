@@ -1,3 +1,5 @@
+import { Context } from "grammy";
+
 export type QueryParams = Record<string, string | number>;
 
 export interface IndicatorValue {
@@ -23,4 +25,16 @@ export interface EsiosApiPostOptions {
   endpoint: string;
   body: any;
   customHeaders?: HeadersInit;
+}
+
+export interface TelegramUser {
+  id: number;
+  telegram_id: number;
+  username: string | null;
+  auth_token: string | null;
+  token_expires_at: string | null;
+}
+
+export interface MyContext extends Context {
+  user?: TelegramUser;
 }

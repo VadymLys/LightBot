@@ -6,6 +6,10 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in environment variables.");
+}
+
 export const generateAccessTokenTelegram = (
   telegramId: number,
   username?: string
@@ -31,6 +35,10 @@ export const generateAccessTokenTelegram = (
 export const verifyJwt = (authHeader?: string): { [key: string]: any } => {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     ResponseHandler.error("Unauthorized: No token provided");
+  }
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    throw new Error("Unauthorized: No token provided");
   }
 
   const token = authHeader.split(" ")[1];

@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "bundle": "esbuild src/bots/Telegram/TelegramLambdaHandler.ts --bundle --platform=node --target=node18 --outfile=dist/lambda.js",
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/db/dbCloud.ts",
     "dev:bot": "tsx src/bots/Telegram/LocalBot.ts",
     "telegram": "tsx src/bots/Telegram/TelegramLambdaHandler.ts",
     "whatsapp": "tsx src/bots/WhatsAppBot.ts",
@@ -49,6 +49,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.3",
+    "vitest-mock-extended": "^3.1.0"
   }
 }

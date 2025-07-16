@@ -14,6 +14,7 @@ describe("Whatsapp command світло", () => {
     };
 
     const result = await handlerCore(event as any);
+    console.log("🚀 ~ it ~ result:", result);
     const parsed = JSON.parse(result.body);
 
     expect(parsed.data).toBeDefined();

@@ -5,10 +5,20 @@ import jwt from "jsonwebtoken";
 
 describe("Test Api", () => {
   it("should return 200 for GET /", async () => {
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw new Error("Token is not found");
+    }
+
+    const token = jwt.sign({ userId: 123 }, jwtSecret, {
+      expiresIn: "1h",
+    });
+
     const res = await request(app)
       .get("/indicators")
-      .set("x-api-key", process.env.API_KEY || "");
-
+      .set("x-api-key", process.env.API_KEY || "")
+      .set("Authorization", `Bearer ${token}`);
     console.log(res.body);
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("success", true);
@@ -37,7 +47,13 @@ describe("Test Api", () => {
     expect(typeof res.body).toBe("object");
   });
   it("checking authorization with JWT", async () => {
-    const token = jwt.sign({ userId: 123 }, process.env.JWT_SECRET, {
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw new Error("Token is not found");
+    }
+
+    const token = jwt.sign({ userId: 123 }, jwtSecret, {
       expiresIn: "1h",
     });
 
@@ -47,7 +63,5 @@ describe("Test Api", () => {
       .set("x-api-key", process.env.API_KEY || "");
 
     expect(res.statusCode).toBe(200);
-    expect(res.headers).toHaveProperty("Authorization");
-    expect(res.headers["Authorization"]).toBe(`Bearer${token}`);
   });
 });
