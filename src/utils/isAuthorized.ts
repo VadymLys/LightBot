@@ -2,7 +2,8 @@ import { verifyJwt } from "../handlers/jwthandler.js";
 import { ResponseHandler } from "../handlers/responseHandler.js";
 
 export const isAuthorized = (event: any): boolean => {
-  const authHeader = event.headers.Authorization || event.headers.Authorization;
+  const authHeader =
+    event.headers?.Authorization || event.headers?.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) return false;
 
@@ -14,6 +15,7 @@ export const isAuthorized = (event: any): boolean => {
 
     return true;
   } catch (err) {
-    return ResponseHandler.error(err);
+    ResponseHandler.fromError(err);
+    return false;
   }
 };

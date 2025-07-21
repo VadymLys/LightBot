@@ -11,18 +11,10 @@ export class SendResponseExpress {
     res.status(statusCode).json(body);
   }
 
-  static error(
-    res: Response,
-    resObject: { statusCode?: number; body: string }
-  ) {
-    const statusCode = resObject.statusCode || 500;
-    const body = resObject.body ?? "{}";
-
-    try {
-      const parsed = JSON.parse(body);
-      res.status(statusCode).json(parsed);
-    } catch {
-      res.status(statusCode).send(body);
-    }
+  static error(res: Response, statusCode: number, message: string) {
+    res.status(statusCode).json({
+      success: false,
+      error: message,
+    });
   }
 }

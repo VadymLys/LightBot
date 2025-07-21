@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ResponseHandler } from "../handlers/responseHandler.js";
+import { SendResponseExpress } from "../utils/sendResponse.js";
 
 export const checkApiKey = (
   req: Request,
@@ -10,8 +10,7 @@ export const checkApiKey = (
     !req.headers["x-api-key"] ||
     req.headers["x-api-key"] !== process.env.API_KEY
   ) {
-    const errorResponse = ResponseHandler.error("Unauthorized", 401);
-    res.status(errorResponse.statusCode).json(JSON.parse(errorResponse.body));
+    const errorResponse = SendResponseExpress.error(res, 401, "Unauthorized");
     return;
   }
   next();

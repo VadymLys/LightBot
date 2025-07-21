@@ -24,22 +24,18 @@ export const registerHandlers = () => {
     const token = generateAccessTokenTelegram(userId, username);
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-    const { rows } = await pool.query(
-      `SELECT * FROM telegram_users WHERE telegram_id = $1`,
-      [userId]
-    );
+    const rows = await pool`
+      SELECT * FROM telegram_users WHERE telegram_id = ${userId}`;
+
+    console.log("✅ Token saved/updated for:", userId);
 
     if (rows.length === 0) {
-      await pool.query(
-        `INSERT INTO telegram_users (telegram_id, username, auth_token, token_expires_at)
-         VALUES ($1, $2, $3, $4)`,
-        [userId, username, token, expiresAt]
-      );
+      await pool`INSERT INTO telegram_users (telegram_id, username, auth_token, token_expires_at)
+         VALUES (
+        ${userId}, ${username}, ${token}, ${expiresAt}
+      )`;
     } else {
-      await pool.query(
-        `UPDATE telegram_users SET auth_token = $1, token_expires_at = $2 WHERE telegram_id = $3`,
-        [token, expiresAt, userId]
-      );
+      await pool`UPDATE telegram_users SET auth_token = ${token}, token_expires_at = ${expiresAt} WHERE telegram_id=${userId}`;
     }
 
     await ctx.reply("Login successful!");
@@ -57,10 +53,13 @@ export const registerHandlers = () => {
       },
     };
 
-    const { rows } = await pool.query(
-      `SELECT auth_token, token_expires_at FROM telegram_users WHERE telegram_id = $1`,
-      [ctx.from?.id]
-    );
+    const rows =
+      await pool`SELECT auth_token, token_expires_at FROM telegram_users WHERE telegram_id = ${ctx.from?.id}`;
+
+    console.log("🧾 User row:", rows);
+
+    console.log("🕒 Token expires at:", new Date(rows[0].token_expires_at));
+    console.log("🕒 Current time:", new Date());
 
     if (
       !rows[0] ||

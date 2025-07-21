@@ -16,9 +16,11 @@ app.get("/indicators", checkApiKey, async (req, res) => {
 
     res.status(result.statusCode).json(data);
   } catch (err) {
-    const status = err instanceof ApiError ? err.statusCode : 500;
-    const errorResponse = ResponseHandler.fromError(status);
-    SendResponseExpress.error(res, errorResponse);
+    if (err instanceof Error) {
+      SendResponseExpress.error(res, 500, err.message);
+    } else {
+      SendResponseExpress.error(res, 500, "Unknown error occurred");
+    }
   }
 });
 

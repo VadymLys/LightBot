@@ -23,8 +23,7 @@ app.get("/indicators", checkApiKey, async (req, res) => {
     res.status(result.statusCode).json(data);
   } catch (err) {
     const status = err instanceof ApiError ? err.statusCode : 500;
-    const errorResponse = ResponseHandler.fromError(status);
-    SendResponseExpress.error(res, errorResponse);
+    SendResponseExpress.error(res, 500, "Internal server error");
   }
 });
 

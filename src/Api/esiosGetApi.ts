@@ -33,7 +33,7 @@ const createApi = (baseUrl: string) => {
             : "";
 
           // Формуємо правильний ресурс, де prop буде частиною шляху
-          const resourse = `${baseUrl}/${prop}/${id}/${qs}`;
+          const resourse = `${baseUrl}/${prop}/${id}${qs}`;
 
           const headers: HeadersInit = {
             "Accept": "application/json",

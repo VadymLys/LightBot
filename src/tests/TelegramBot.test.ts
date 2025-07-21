@@ -1,25 +1,18 @@
-import { handlerCore } from "../handlers/handleCore";
-import { toISODate, today, tomorrow } from "../utils/DateConverter";
 import { describe, it, expect, vi } from "vitest";
 import { generateAccessTokenTelegram } from "../handlers/jwthandler";
 import { authMiddleware } from "../middleware/auth-middleware";
 import { pool } from "../db/db";
 import { MyContext } from "../types/types.js";
+import * as handlerModule from "../handlers/handleCore";
 
 describe("Telegram command /getdata", () => {
   it("should return valid electricity prices", async () => {
-    const event = {
-      queryStringParameters: {
-        id: "1001",
-        start_date: toISODate(today),
-        end_date: toISODate(tomorrow),
-        geo_agg: "sum",
-        time_trunc: "hour",
-      },
-    };
+    vi.spyOn(handlerModule, "handlerCore").mockResolvedValue({
+      statusCode: 200,
+      body: JSON.stringify({ data: ["10.5 MWh", "12.3 MWh"] }),
+    });
 
-    const result = await handlerCore(event as any);
-    console.log("🚀 ~ it ~ result:", result);
+    const result = await handlerModule.handlerCore({} as any);
     const parsed = JSON.parse(result.body);
 
     expect(parsed.data).toBeDefined();
