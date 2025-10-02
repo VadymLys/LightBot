@@ -39,7 +39,6 @@ export const registerHandlers = () => {
     }
 
     await ctx.reply("Login successful!");
-    await ctx.reply(token);
   });
 
   bot.command("getdata", authMiddleware, async (ctx) => {
@@ -73,7 +72,8 @@ export const registerHandlers = () => {
     }
 
     try {
-      const response = await handlerCore(event as any);
+      const response = (await handlerCore(event as any)) as { body: string };
+
       const parsed = JSON.parse(response.body);
       const message = parsed.data;
       console.log("🚀 ~ bot.command ~ message:", message);
@@ -91,11 +91,17 @@ export const registerHandlers = () => {
     }
   });
 
-  bot.command("start", (ctx) => ctx.reply("Hi, I'm your bot"));
+  bot.command("help", (ctx) =>
+    ctx.reply("Write /login to get started and /getdata to get data")
+  );
 
-  bot.command("help", (ctx) => ctx.reply("Write /start for start"));
-
-  bot.on("message:text", (ctx) => {
-    ctx.reply(`You wrote: ${ctx.message.text}`);
+  bot.on("message:text", async (ctx, next) => {
+    const text = ctx.message.text;
+    if (text.startsWith("/")) {
+      await ctx.reply(`Unknown command. Use /help to see available commands.`);
+    } else {
+      await ctx.reply("💬 I only understand commands. Try /help.");
+    }
+    await next();
   });
 };

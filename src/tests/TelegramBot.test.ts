@@ -12,7 +12,9 @@ describe("Telegram command /getdata", () => {
       body: JSON.stringify({ data: ["10.5 MWh", "12.3 MWh"] }),
     });
 
-    const result = await handlerModule.handlerCore({} as any);
+    const result = (await handlerModule.handlerCore({} as any)) as {
+      body: string;
+    };
     const parsed = JSON.parse(result.body);
 
     expect(parsed.data).toBeDefined();

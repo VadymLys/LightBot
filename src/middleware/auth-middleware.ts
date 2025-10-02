@@ -10,7 +10,6 @@ export const authMiddleware: MiddlewareFn<MyContext> = async (ctx, next) => {
     return;
   }
 
-  // 🔧 Використовуємо neon-style запит
   const rows = await pool`
     SELECT auth_token, token_expires_at 
     FROM telegram_users 

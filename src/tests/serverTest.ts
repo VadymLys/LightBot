@@ -4,13 +4,16 @@ import { ApiError } from "../errors/ApiError.js";
 import { SendResponseExpress } from "../utils/sendResponse.js";
 import { checkApiKey } from "../utils/checkApiKey.js";
 import { handlerCore } from "../handlers/handleCore.js";
-import { APIGatewayProxyEvent } from "aws-lambda";
+import { APIGatewayProxyEventV2 } from "aws-lambda";
 const app = express();
 app.use(express.json());
 
 app.get("/indicators", checkApiKey, async (req, res) => {
   try {
-    const result = await handlerCore({} as APIGatewayProxyEvent);
+    const result = (await handlerCore({} as APIGatewayProxyEventV2)) as {
+      body: string;
+      statusCode: number;
+    };
 
     const data = JSON.parse(result.body);
 

@@ -2,5 +2,5 @@ import { neon } from "@neondatabase/serverless";
 import dotenv from "dotenv";
 
 dotenv.config();
-export const pool = neon(process.env.DB_URL!);
-console.log("🚀 ~ pool:", pool);
+const dbUrl = process.env.DB_URL || process.env.DATABASE_URL;
+export const pool = neon(dbUrl!);

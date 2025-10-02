@@ -8,11 +8,11 @@ import {
   toISODate,
 } from "../utils/DateConverter.js";
 import { formatIndicatorMessage } from "../utils/formatIndicatorMessage.js";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 
 export const handlerCore = async (
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
+  event: APIGatewayProxyEventV2
+): Promise<APIGatewayProxyResultV2> => {
   try {
     const values = await esiosApi.indicators(1001, {
       start_date: toISODate(today),
