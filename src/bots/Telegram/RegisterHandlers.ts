@@ -13,65 +13,55 @@ export const registerHandlers = () => {
   });
 
   bot.command("login", async (ctx) => {
-    const userId = ctx.from?.id;
-    const username = ctx.from?.username;
+    try {
+      const userId = ctx.from?.id;
+      const username = ctx.from?.username;
 
-    if (!userId) {
-      await ctx.reply("User ID  not found");
-      return;
-    }
+      if (!userId) {
+        await ctx.reply("User ID  not found");
+        return;
+      }
 
-    const token = generateAccessTokenTelegram(userId, username);
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+      const token = generateAccessTokenTelegram(userId, username);
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-    const rows = await pool`
-      SELECT * FROM telegram_users WHERE telegram_id = ${userId}`;
-
-    console.log("✅ Token saved/updated for:", userId);
-
-    if (rows.length === 0) {
       await pool`INSERT INTO telegram_users (telegram_id, username, auth_token, token_expires_at)
-         VALUES (
-        ${userId}, ${username}, ${token}, ${expiresAt}
-      )`;
-    } else {
-      await pool`UPDATE telegram_users SET auth_token = ${token}, token_expires_at = ${expiresAt} WHERE telegram_id=${userId}`;
-    }
+      VALUES (${userId}, ${username}, ${token}, ${expiresAt})
+      ON CONFLICT (telegram_id)
+      DO UPDATE SET
+        username = EXCLUDED.username,
+        auth_token = EXCLUDED.auth_token,
+        token_expires_at = EXCLUDED.token_expires_at`;
 
-    await ctx.reply("Login successful!");
+      console.log("✅ Token saved/updated for:", userId);
+
+      await ctx.reply("Login successful!");
+    } catch (err) {
+      console.error("Login error:", err);
+      await ctx.reply("❌ Error in login. Try again later.");
+    }
   });
 
   bot.command("getdata", authMiddleware, async (ctx) => {
-    const event = {
-      queryStringParameters: {
-        id: "1001",
-        start_date: toISODate(today),
-        end_date: toISODate(tomorrow),
-        geo_agg: "sum",
-        time_trunc: "hour",
-      },
-    };
-
-    const rows =
-      await pool`SELECT auth_token, token_expires_at FROM telegram_users WHERE telegram_id = ${ctx.from?.id}`;
-
-    console.log("🧾 User row:", rows);
-
-    console.log("🕒 Token expires at:", new Date(rows[0].token_expires_at));
-    console.log("🕒 Current time:", new Date());
-
-    if (
-      !rows[0] ||
-      !rows[0].auth_token ||
-      new Date(rows[0].token_expires_at) < new Date()
-    ) {
-      await ctx.reply(
-        "❌ You are not authorized or your session expired. Use /login again."
-      );
-      return;
-    }
-
     try {
+      if (!ctx.user) {
+        await ctx.reply("❌ User context missing. Please /login again.");
+        return;
+      }
+
+      const event = {
+        queryStringParameters: {
+          id: "1001",
+          start_date: toISODate(today),
+          end_date: toISODate(tomorrow),
+          geo_agg: "sum",
+          time_trunc: "hour",
+        },
+        headers: {
+          Authorization: `Bearer ${ctx.user.auth_token}`, // передаємо токен
+        },
+      };
+
       const response = (await handlerCore(event as any)) as { body: string };
 
       const parsed = JSON.parse(response.body);
