@@ -6,7 +6,7 @@
     "bundle": "esbuild src/bots/Telegram/TelegramLambdaHandler.ts --bundle --platform=node --target=node18 --outfile=dist/lambda.js",
     "dev": "tsx watch src/db/dbCloud.ts",
     "dev:bot": "tsx src/bots/Telegram/LocalBot.ts",
-    "telegram": "tsx src/bots/Telegram/TelegramLambdaHandler.ts",
+    "start": "tsx src/bots/Telegram/TelegramLambdaHandler.ts",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",

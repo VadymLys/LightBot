@@ -58,7 +58,7 @@ export const registerHandlers = () => {
           time_trunc: "hour",
         },
         headers: {
-          Authorization: `Bearer ${ctx.user.auth_token}`, // передаємо токен
+          Authorization: `Bearer ${ctx.user.auth_token}`, 
         },
       };
 
