@@ -1,5 +1,4 @@
 import express from "express";
-import { ResponseHandler } from "./handlers/responseHandler.js";
 import { ApiError } from "./errors/ApiError.js";
 import { SendResponseExpress } from "./utils/sendResponse.js";
 import { checkApiKey } from "./utils/checkApiKey.js";
@@ -31,18 +30,22 @@ app.get("/indicators", checkApiKey, async (req, res) => {
 });
 
 app.post("/login", checkApiKey, async (req, res) => {
-  const telegramData = req.body;
+  try {
+    const telegramData = req.body;
 
-  if (!authHandler(telegramData)) {
-    ResponseHandler.error(telegramData);
+    if (!authHandler(telegramData)) {
+      return SendResponseExpress.error(res, 401, "Unauthorized");
+    }
+
+    const token = generateAccessTokenTelegram(
+      telegramData.id,
+      telegramData.username
+    );
+
+    res.json({ token });
+  } catch (err) {
+    SendResponseExpress.error(res, 400, "Error in login");
   }
-
-  const token = generateAccessTokenTelegram(
-    telegramData.id,
-    telegramData.username
-  );
-
-  res.json({ token });
 });
 
 const PORT = process.env.PORT || 3000;
