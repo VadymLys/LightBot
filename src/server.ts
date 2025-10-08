@@ -7,7 +7,6 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import dotenv from "dotenv";
 import { generateAccessTokenTelegram } from "./handlers/jwthandler.js";
 import { authHandler } from "./handlers/authHandler.js";
-import path from "path";
 
 dotenv.config();
 
@@ -19,8 +18,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/42g9xosdhkxk2e5ec4oxf8g8p02c7y.html", (req, res) => {
-  console.log(__dirname);
-  res.sendFile(path.join(__dirname, "42g9xosdhkxk2e5ec4oxf8g8p02c7y.html"));
+  res.type("text/plain");
+  res.send("facebook-domain-verification=42g9xosdhkxk2e5ec4oxf8g8p02c7y");
 });
 
 app.get("/indicators", checkApiKey, async (req, res) => {
