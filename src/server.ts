@@ -19,6 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/42g9xosdhkxk2e5ec4oxf8g8p02c7y.html", (req, res) => {
+  console.log(__dirname);
   res.sendFile(path.join(__dirname, "42g9xosdhkxk2e5ec4oxf8g8p02c7y.html"));
 });
 
