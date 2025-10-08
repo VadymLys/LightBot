@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 
 app.get("/42g9xosdhkxk2e5ec4oxf8g8p02c7y.html", (req, res) => {
   res.type("text/plain");
-  res.send("facebook-domain-verification=42g9xosdhkxk2e5ec4oxf8g8p02c7y");
+  res.send("42g9xosdhkxk2e5ec4oxf8g8p02c7y");
 });
 
 app.get("/indicators", checkApiKey, async (req, res) => {
