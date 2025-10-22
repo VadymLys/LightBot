@@ -1,10 +1,8 @@
 import dotenv from "dotenv";
 import { vi } from "vitest";
 
-// Завантажуємо змінні середовища з .env
 dotenv.config();
 
-// Моки для console, щоб не засмічувати тестовий вивід
 vi.spyOn(console, "log").mockImplementation(() => {});
 vi.spyOn(console, "error").mockImplementation(() => {});
 vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -13,10 +11,9 @@ vi.spyOn(console, "warn").mockImplementation(() => {});
 
 import { pool } from "../db/db.js";
 
-// Перевірка підключення до бази перед усіма тестами
 beforeAll(async () => {
   try {
-    await pool.query("SELECT 1"); // ping DB
+    await pool.query("SELECT 1");
   } catch (err) {
     console.error("❌ DB connection error in vitest.setup.ts:", err);
   }
