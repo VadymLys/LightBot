@@ -55,8 +55,6 @@ vi.mock("../bots/Telegram/TelegramBot.ts", () => ({
 
 vi.mock("../db/dbCloud.js", () => ({
   pool: {
-    query: vi.fn().mockResolvedValue({
-      rows: [{ auth_token: null, token_expires_at: new Date() }],
-    }),
+    query: vi.fn().mockResolvedValue([]),
   },
 }));
