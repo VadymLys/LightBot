@@ -13,6 +13,8 @@ process.env.JWT_SECRET = process.env.JWT_SECRET || "test_jwt_secret";
 process.env.API_KEY = process.env.API_KEY || "test_api_key";
 process.env.TELEGRAM_BOT_TOKEN =
   process.env.TELEGRAM_BOT_TOKEN || "test_telegram_token";
+process.env.DB_URL =
+  process.env.DB_URL || "postgresql://user:password@localhost:5432/testdb";
 
 (globalThis as any).__TEST_DB__ = true;
 
@@ -39,3 +41,11 @@ vi.mock("../bots/Telegram/TelegramBot.ts", () => {
     },
   };
 });
+
+// Заглушка для Neon pool
+vi.mock("../db/dbCloud.ts", () => ({
+  pool: {
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    end: vi.fn(),
+  },
+}));
