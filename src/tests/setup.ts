@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { vi } from "vitest";
 
-dotenv.config();
+dotenv.config({ override: false });
 
 vi.spyOn(console, "log").mockImplementation(() => {});
 vi.spyOn(console, "error").mockImplementation(() => {});
