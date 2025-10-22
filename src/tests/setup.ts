@@ -18,10 +18,10 @@ vi.spyOn(console, "log").mockImplementation(() => {});
 vi.spyOn(console, "error").mockImplementation(() => {});
 vi.spyOn(console, "warn").mockImplementation(() => {});
 
-vi.mock("../db/db.ts", () => {
+vi.mock("../db/dbCloud.ts", () => {
   return {
     pool: {
-      query: vi.fn().mockResolvedValue([]),
+      query: vi.fn(),
       end: vi.fn(),
     },
   };

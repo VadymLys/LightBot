@@ -34,7 +34,7 @@ describe("generateAccessTokenTelegram", () => {
   });
 });
 
-vi.mock("../db/db.ts", () => ({
+vi.mock("../db/dbCloud.ts", () => ({
   pool: {
     query: vi.fn(),
   },
@@ -45,7 +45,7 @@ describe("authMiddleware", () => {
     const mockReply = vi.fn();
     const mockNext = vi.fn();
 
-    (pool.query as any).mockResolvedValue({
+    (pool.query as any).mockResolvedValueOnce({
       rows: [{ auth_token: null, token_expires_at: new Date() }],
     });
 
