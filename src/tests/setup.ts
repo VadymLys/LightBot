@@ -41,10 +41,3 @@ vi.mock("../bots/Telegram/TelegramBot.ts", () => {
     },
   };
 });
-
-vi.mock("../db/dbCloud.ts", () => ({
-  pool: {
-    query: vi.fn().mockResolvedValue({ rows: [] }),
-    end: vi.fn(),
-  },
-}));
