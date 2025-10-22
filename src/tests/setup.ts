@@ -43,7 +43,6 @@ afterAll(async () => {
   await pool.end();
 });
 
-// 8️⃣ Мок телеграм-бота
 vi.mock("../bots/Telegram/TelegramBot.ts", () => ({
   bot: {
     command: vi.fn(),
@@ -51,5 +50,13 @@ vi.mock("../bots/Telegram/TelegramBot.ts", () => ({
     on: vi.fn(),
     start: vi.fn(),
     reply: vi.fn(),
+  },
+}));
+
+vi.mock("../db/dbCloud.js", () => ({
+  pool: {
+    query: vi.fn().mockResolvedValue({
+      rows: [{ auth_token: null, token_expires_at: new Date() }],
+    }),
   },
 }));
