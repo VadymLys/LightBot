@@ -42,7 +42,6 @@ vi.mock("../bots/Telegram/TelegramBot.ts", () => {
   };
 });
 
-// Заглушка для Neon pool
 vi.mock("../db/dbCloud.ts", () => ({
   pool: {
     query: vi.fn().mockResolvedValue({ rows: [] }),
