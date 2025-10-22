@@ -28,6 +28,7 @@ jobs:
       - name: Run tests
         run: npm test
         env:
+          NODE_ENV: production
           API_KEY: ${{ secrets.API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}

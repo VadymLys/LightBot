@@ -1,15 +1,15 @@
-import dotenv from "dotenv";
 import { vi } from "vitest";
+import { pool } from "../db/db.js";
 
-dotenv.config({ override: false });
+if (process.env.NODE_ENV !== "production") {
+  import("dotenv").then((dotenv) => dotenv.config());
+}
 
 vi.spyOn(console, "log").mockImplementation(() => {});
 vi.spyOn(console, "error").mockImplementation(() => {});
 vi.spyOn(console, "warn").mockImplementation(() => {});
 
 (globalThis as any).__TEST_DB__ = true;
-
-import { pool } from "../db/db.js";
 
 beforeAll(async () => {
   try {
