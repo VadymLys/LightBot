@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { generateAccessTokenTelegram } from "../handlers/jwthandler";
 import { authMiddleware } from "../middleware/auth-middleware";
-import { pool } from "../db/db";
+import { pool } from "../db/dbCloud.js";
 import { MyContext } from "../types/types.js";
 import * as handlerModule from "../handlers/handleCore";
 
@@ -34,20 +34,19 @@ describe("generateAccessTokenTelegram", () => {
   });
 });
 
-vi.mock("../db/dbCloud.ts", () => ({
-  pool: {
-    query: vi.fn(),
-  },
-}));
-
 describe("authMiddleware", () => {
   it("check case of empty token", async () => {
     const mockReply = vi.fn();
     const mockNext = vi.fn();
 
-    (pool.query as any).mockResolvedValueOnce({
-      rows: [{ auth_token: null, token_expires_at: new Date() }],
-    });
+    // Mock для випадку, коли токен прострочений
+    const mockPool = await import("../db/dbCloud.js");
+    (mockPool.pool as any).mockResolvedValueOnce([
+      {
+        auth_token: "expired_token",
+        token_expires_at: new Date(Date.now() - 3600000), // Минула дата
+      },
+    ]);
 
     const ctx = {
       from: { id: 12345 },
@@ -59,7 +58,6 @@ describe("authMiddleware", () => {
     expect(mockReply).toHaveBeenCalledWith(
       "🔒 Session expired or not authorized. Use /login."
     );
-
     expect(mockNext).not.toHaveBeenCalled();
   });
 });

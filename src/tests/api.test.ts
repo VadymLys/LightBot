@@ -20,6 +20,9 @@ describe("Test Api", () => {
       .set("x-api-key", process.env.API_KEY || "")
       .set("Authorization", `Bearer ${token}`);
     console.log(res.body);
+    console.log("🔍 Response status:", res.status);
+    console.log("🔍 Response body:", res.body);
+    console.log("🔍 Response text:", res.text);
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("success", true);
     expect(res.body).toHaveProperty("data");

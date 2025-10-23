@@ -11,7 +11,8 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:clean": "rm -rf node_modules/.vitest && vitest run"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",

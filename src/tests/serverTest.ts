@@ -12,8 +12,10 @@ app.get("/indicators", checkApiKey, async (req, res) => {
       body: string;
       statusCode: number;
     };
+    console.log("🚀 ~ result ~ result:", result);
 
     const data = JSON.parse(result.body);
+    console.log("🚀 ~ app.get ~ data :", data);
 
     res.status(result.statusCode).json(data);
   } catch (err) {
