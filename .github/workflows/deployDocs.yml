@@ -23,7 +23,7 @@ jobs:
         run: npm ci
 
       - name: Build docs
-        run: npx typedoc --out docs src
+        run: npx typedoc --out docs src --entryPointStrategy expand
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
