@@ -35,20 +35,6 @@ jobs:
       - name: Create zip file
         run: zip -j lambda.zip dist/lambda.js
 
-      - name: 🧩 Check if lambda.zip exists
-        run: |
-          if [ ! -f "lambda.zip" ]; then
-            echo "❌ lambda.zip not found!"
-            exit 1
-          fi
-          echo "✅ lambda.zip exists and is ready to upload."
-
-      - name: 📦 Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: lambda-archive
-          path: lambda.zip
-
       - name: 🔍 Check AWS secrets presence
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
