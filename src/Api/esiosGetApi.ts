@@ -14,52 +14,31 @@ dotenv.config();
 
 const url = "https://api.esios.ree.es";
 
-const createApi = (baseUrl: string) => {
-  InputValidator.isUrl(baseUrl);
+export const esiosApi: EsiosApi = {
+  indicators: async (id, queryParams, token) => {
+    const qs = queryParams
+      ? `?${new URLSearchParams(stringifyQueryParams(queryParams)).toString()}`
+      : "";
 
-  return new Proxy(
-    {},
-    {
-      get: (target, prop: string) => {
-        return async (
-          id: number,
-          queryParams?: QueryParams,
-          token?: string
-        ): Promise<IndicatorResponse> => {
-          let qs = queryParams
-            ? `?${new URLSearchParams(
-                stringifyQueryParams(queryParams)
-              ).toString()}`
-            : "";
+    const resource = `${url}/indicators/${id}${qs}`;
 
-          // Формуємо правильний ресурс, де prop буде частиною шляху
-          const resourse = `${baseUrl}/${prop}/${id}${qs}`;
+    const headers: HeadersInit = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "x-api-key": process.env.API_KEY || "",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
-          const headers: HeadersInit = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "x-api-key": process.env.API_KEY || "",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          };
+    const res = await fetch(resource, { method: "GET", headers });
 
-          const res = await fetch(resourse, {
-            method: "GET",
-            headers,
-          });
-
-          if (res.ok) {
-            const data: IndicatorResponse = await res.json();
-            return data;
-          } else {
-            const errorText = await res.text();
-            throw new ApiError(
-              `API error ${res.status}: ${errorText}, ${res.status}`
-            );
-          }
-        };
-      },
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new ApiError(
+        `API error ${res.status}: ${errorText}, ${res.status}`
+      );
     }
-  ) as EsiosApi;
-};
 
-export const esiosApi = createApi(url);
+    const data: IndicatorResponse = await res.json();
+    return data;
+  },
+};

@@ -17,7 +17,8 @@ export interface IndicatorResponse {
 export interface EsiosApi {
   indicators: (
     id: number,
-    queryParams?: QueryParams
+    queryParams?: QueryParams,
+    token?: string
   ) => Promise<IndicatorResponse>;
 }
 
@@ -38,3 +39,8 @@ export interface TelegramUser {
 export interface MyContext extends Context {
   user?: TelegramUser;
 }
+
+export type CacheEntry = {
+  value: any;
+  expiresAt: number;
+};
