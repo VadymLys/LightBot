@@ -9,5 +9,5 @@ export const toISODate = (date: Date, options?: { dateOnly: boolean }) => {
   if (options?.dateOnly) {
     return date.toISOString().split("T")[0];
   }
-  return date.toISOString().split(".")[0] + "+02:00";
+  return date.toISOString().split(".")[0];
 };

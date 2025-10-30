@@ -12,7 +12,8 @@
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:clean": "rm -rf node_modules/.vitest && vitest run"
+    "test:clean": "rm -rf node_modules/.vitest && vitest run",
+    "check-webhook": "tsx src/utils/checkWebhook.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
