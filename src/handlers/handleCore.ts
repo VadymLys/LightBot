@@ -29,14 +29,19 @@ export const handlerCore = async (
       return response;
     });
 
+    console.log("💾 Cached values:", values);
+
     if (!values?.indicator?.values?.length) {
+      console.warn("⚠️ No data in response");
       return ResponseHandler.success(["⚠️ No data available for this period."]);
     }
 
     const handleMessage = formatIndicatorMessage(values);
+    console.log("📝 Formatted message:", handleMessage);
 
     return ResponseHandler.success(handleMessage);
   } catch (err) {
+    console.error("💥 Error in handlerCore:", err);
     const status = err instanceof ApiError ? err.statusCode : 500;
     return ResponseHandler.fromError(status);
   }

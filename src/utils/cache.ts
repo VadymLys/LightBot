@@ -37,6 +37,17 @@ export class Cache {
     this.store.clear();
   }
 
+  getStats() {
+    return {
+      size: this.store.size,
+      keys: Array.from(this.store.keys()),
+      entries: Array.from(this.store.entries()).map(([key, entry]) => ({
+        key,
+        expiresIn: entry.expiresAt - Date.now(),
+      })),
+    };
+  }
+
   async remember<T>(
     key: string,
     ttlSeconds: number,
@@ -48,7 +59,7 @@ export class Cache {
       return cached;
     }
 
-    console.log(`cache miss: ${key}`);
+    console.log(`❌ Cache miss: ${key}`);
 
     const result = await fetcher();
 
@@ -60,5 +71,4 @@ export class Cache {
     return result;
   }
 }
-
 export const cache = new Cache(60);

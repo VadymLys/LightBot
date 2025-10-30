@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Cache } from "../utils/cache.js";
 
 describe("Cache class", () => {
@@ -60,4 +60,55 @@ describe("Cache class", () => {
 
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
+});
+
+let cache: Cache;
+
+beforeEach(() => {
+  cache = new Cache(60);
+});
+
+afterEach(() => {
+  cache.clear();
+});
+
+it("should return empty stats for empty cache", () => {
+  const stats = cache.getStats();
+
+  expect(stats).toEqual({
+    size: 0,
+    keys: [],
+    entries: [],
+  });
+});
+
+it("should return correct stats for cache with entries", () => {
+  cache.set("key1", "value1", 60);
+  cache.set("key2", "value2", 120);
+
+  const stats = cache.getStats();
+
+  expect(stats.size).toBe(2);
+  expect(stats.keys).toContain("key1");
+  expect(stats.keys).toContain("key2");
+  expect(stats.entries).toHaveLength(2);
+
+  stats.entries.forEach((entry) => {
+    expect(entry).toHaveProperty("key");
+    expect(entry).toHaveProperty("expiresIn");
+    expect(typeof entry.key).toBe("string");
+    expect(typeof entry.expiresIn).toBe("number");
+    expect(entry.expiresIn).toBeGreaterThan(0);
+  });
+});
+
+it("should show correct expiresIn values", () => {
+  const ttl = 60;
+  cache.set("test_key", "test_value", ttl);
+
+  const stats = cache.getStats();
+  const entry = stats.entries[0];
+
+  expect(entry.expiresIn).toBeGreaterThan(58000);
+  expect(entry.expiresIn).toBeLessThan(61000);
 });

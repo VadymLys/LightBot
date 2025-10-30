@@ -5,6 +5,7 @@ import { bot } from "./TelegramBot.js";
 import { generateAccessTokenTelegram } from "../../handlers/jwthandler.js";
 import { pool } from "../../db/dbCloud.js";
 import { authMiddleware } from "../../middleware/auth-middleware.js";
+import { cache } from "../../utils/cache.js";
 
 export const registerHandlers = () => {
   bot.use(async (ctx, next) => {
@@ -58,32 +59,61 @@ export const registerHandlers = () => {
           time_trunc: "hour",
         },
         headers: {
-          Authorization: `Bearer ${ctx.user.auth_token}`, 
+          Authorization: `Bearer ${ctx.user.auth_token}`,
         },
       };
 
       const response = (await handlerCore(event as any)) as { body: string };
 
-      const parsed = JSON.parse(response.body);
-      const message = parsed.data;
-      console.log("🚀 ~ bot.command ~ message:", message);
+      if (!response.body) {
+        throw new Error("Empty response body");
+      }
 
-      await ctx.reply("your data:");
-      await ctx.reply(message.join("\n"));
+      const parsed = JSON.parse(response.body);
+      console.log("📊 Parsed response:", parsed);
+
+      if (!parsed.success) {
+        throw new Error(parsed.error || "API returned error");
+      }
+
+      const message = parsed.data;
+
+      await ctx.reply("Your data:");
+
+      if (Array.isArray(message) && message.length > 0) {
+        const messageText = message.join("\n");
+        if (messageText.length > 4096) {
+          for (let i = 0; i < messageText.length; i += 4096) {
+            await ctx.reply(messageText.substring(i, i + 4096));
+          }
+        } else {
+          await ctx.reply(messageText);
+        }
+      } else {
+        await ctx.reply("No data available");
+      }
     } catch (err: unknown) {
-      const errorMessage = `[${new Date().toISOString()}] ❌ Error ${
+      console.error("💥 Error in getdata command:", err);
+      const errorMessage = `❌ Error: ${
         err instanceof Error ? err.message : String(err)
       }`;
-      ResponseHandler.error(errorMessage);
-      await ctx.reply(
-        "Error occurred while fetching data. Please try again later."
-      );
+      await ctx.reply(errorMessage);
     }
   });
 
   bot.command("help", (ctx) =>
     ctx.reply("Write /login to get started and /getdata to get data")
   );
+
+  bot.command("cachestats", async (ctx) => {
+    const stats = cache.getStats();
+    await ctx.reply(`Cache stats: ${JSON.stringify(stats, null, 2)}`);
+  });
+
+  bot.command("clearcache", async (ctx) => {
+    cache.clear();
+    await ctx.reply("✅ Cache cleared");
+  });
 
   bot.on("message:text", async (ctx, next) => {
     const text = ctx.message.text;
